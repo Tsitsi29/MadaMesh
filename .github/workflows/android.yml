@@ -16,26 +16,20 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: gradle
 
     - name: Install NDK
       run: echo "y" | sudo ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --install "ndk;25.1.8937393"
 
-    - name: Setup Gradle
+    - name: Initialize Gradle Wrapper
       run: |
-        mkdir -p app/src/main/java/com/v0id/madamesh
-        mkdir -p app/src/main/res/layout
-        mkdir -p app/src/main/res/values
+        gradle wrapper --gradle-version 7.4.2
+        chmod +x gradlew
 
     - name: Build with Gradle
-      run: |
-        # On va créer un build.gradle minimal pour que l'Action puisse compiler
-        chmod +x gradlew || true
-        ./gradlew assembleDebug || echo "Gradle non configuré, tentative de création de structure..."
+      run: ./gradlew assembleDebug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: MadaMesh-Alpha
         path: app/build/outputs/apk/debug/*.apk
-      continue-on-error: true
